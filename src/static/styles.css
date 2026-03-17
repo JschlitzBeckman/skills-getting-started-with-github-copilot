@@ -127,6 +127,12 @@ section h3 {
   background-color: #b71c1c;
 }
 
+.participant-remove:focus-visible {
+  outline: 2px solid #ffeb3b;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.6);
+}
+
 .participants-empty {
   margin: 0;
   font-style: italic;
@@ -165,6 +171,12 @@ button {
 
 button:hover {
   background-color: #3949ab;
+}
+
+button:focus-visible {
+  outline: 2px solid #ffeb3b;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.5);
 }
 
 .message {
