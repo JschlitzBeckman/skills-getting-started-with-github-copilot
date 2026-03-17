@@ -1,11 +1,15 @@
+import urllib.parse
+
+
 def test_unregister_success_removes_participant(client):
     # Arrange
     activity_name = "Programming Class"
     email = "emma@mergington.edu"
 
     # Act
+    encoded_activity_name = urllib.parse.quote(activity_name, safe="")
     response = client.delete(
-        f"/activities/{activity_name}/participants",
+        f"/activities/{encoded_activity_name}/participants",
         params={"email": email},
     )
     activities_response = client.get("/activities")
@@ -22,8 +26,9 @@ def test_unregister_returns_404_for_unknown_activity(client):
     activity_name = "Unknown Club"
 
     # Act
+    encoded_activity_name = urllib.parse.quote(activity_name, safe="")
     response = client.delete(
-        f"/activities/{activity_name}/participants",
+        f"/activities/{encoded_activity_name}/participants",
         params={"email": "student@mergington.edu"},
     )
 
@@ -38,8 +43,9 @@ def test_unregister_returns_404_for_missing_participant(client):
     missing_email = "not.enrolled@mergington.edu"
 
     # Act
+    encoded_activity_name = urllib.parse.quote(activity_name, safe="")
     response = client.delete(
-        f"/activities/{activity_name}/participants",
+        f"/activities/{encoded_activity_name}/participants",
         params={"email": missing_email},
     )
 
@@ -52,11 +58,15 @@ def test_unregister_repeat_delete_returns_not_found(client):
     # Arrange
     activity_name = "Programming Class"
     email = "emma@mergington.edu"
-    client.delete(f"/activities/{activity_name}/participants", params={"email": email})
+    encoded_activity_name = urllib.parse.quote(activity_name, safe="")
+    client.delete(
+        f"/activities/{encoded_activity_name}/participants",
+        params={"email": email},
+    )
 
     # Act
     response = client.delete(
-        f"/activities/{activity_name}/participants",
+        f"/activities/{encoded_activity_name}/participants",
         params={"email": email},
     )
 
