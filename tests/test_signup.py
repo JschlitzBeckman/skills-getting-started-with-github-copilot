@@ -1,10 +1,14 @@
+from urllib.parse import quote
+
+
 def test_signup_success_adds_participant(client):
     # Arrange
     activity_name = "Chess Club"
+    encoded_activity_name = quote(activity_name, safe="")
     email = "new.student@mergington.edu"
 
     # Act
-    response = client.post(f"/activities/{activity_name}/signup", params={"email": email})
+    response = client.post(f"/activities/{encoded_activity_name}/signup", params={"email": email})
     activities_response = client.get("/activities")
     participants = activities_response.json()[activity_name]["participants"]
 
@@ -17,9 +21,13 @@ def test_signup_success_adds_participant(client):
 def test_signup_returns_404_for_unknown_activity(client):
     # Arrange
     activity_name = "Unknown Club"
+    encoded_activity_name = quote(activity_name, safe="")
 
     # Act
-    response = client.post(f"/activities/{activity_name}/signup", params={"email": "student@mergington.edu"})
+    response = client.post(
+        f"/activities/{encoded_activity_name}/signup",
+        params={"email": "student@mergington.edu"},
+    )
 
     # Assert
     assert response.status_code == 404
@@ -29,11 +37,12 @@ def test_signup_returns_404_for_unknown_activity(client):
 def test_signup_returns_400_for_duplicate_participant(client):
     # Arrange
     activity_name = "Chess Club"
+    encoded_activity_name = quote(activity_name, safe="")
     existing_email = "michael@mergington.edu"
 
     # Act
     response = client.post(
-        f"/activities/{activity_name}/signup",
+        f"/activities/{encoded_activity_name}/signup",
         params={"email": existing_email},
     )
 
@@ -45,6 +54,7 @@ def test_signup_returns_400_for_duplicate_participant(client):
 def test_signup_returns_400_when_activity_is_full(client):
     # Arrange
     activity_name = "Chess Club"
+    encoded_activity_name = quote(activity_name, safe="")
     activities = client.get("/activities").json()
     current_participants = activities[activity_name]["participants"]
     max_participants = activities[activity_name]["max_participants"]
@@ -52,11 +62,11 @@ def test_signup_returns_400_when_activity_is_full(client):
     needed_slots = max_participants - len(current_participants)
     for index in range(needed_slots):
         filler_email = f"filler{index}@mergington.edu"
-        client.post(f"/activities/{activity_name}/signup", params={"email": filler_email})
+        client.post(f"/activities/{encoded_activity_name}/signup", params={"email": filler_email})
 
     # Act
     response = client.post(
-        f"/activities/{activity_name}/signup",
+        f"/activities/{encoded_activity_name}/signup",
         params={"email": "overflow@mergington.edu"},
     )
 
